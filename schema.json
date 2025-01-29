@@ -1,0 +1,35 @@
+{
+    "table_name": "ledgers",
+    "columns": {
+        "id": "int",
+        "journal_id": "int",
+        "voucher_id": "int",
+        "account_id": "int",
+        "amount": "decimal",
+        "entry_date": "bigint",
+        "party_type": "text",
+        "party_id": "int",
+        "party_role_id": "int",
+        "custom_field_1": "text",
+        "ref_invoice": "int",
+        "description": "text",
+        "project_id": "int",
+        "branch_id": "int",
+        "src_currency": "text",
+        "src_amount": "decimal",
+        "party_currency": "text",
+        "party_amount": "decimal",
+        "account_currency": "text",
+        "account_amount": "decimal",
+        "inactive": "int",
+        "other_accounts": "text",
+        "deleted": "int",
+        "year_closing": "int",
+        "cost_center_id": "int",
+        "hide_on_edit": "int",
+        "is_adjustment": "int"
+    },
+    "primary_key": [
+        "id"
+    ]
+}
