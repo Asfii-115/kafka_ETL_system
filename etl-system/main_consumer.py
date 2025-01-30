@@ -1,8 +1,10 @@
+# main_consumer.py
 from confluent_kafka import Consumer
 from cassandra.cluster import Cluster
 from cassandra.auth import PlainTextAuthProvider
 import json
 from decimal import Decimal
+import os
 
 with open("schema.json", "r") as schema_file:
     schema = json.load(schema_file)
@@ -10,25 +12,27 @@ with open("schema.json", "r") as schema_file:
 table_name = schema["table_name"]
 columns = schema["columns"]
 
-
+# Kafka configuration with environment variables
 kafka_config = {
-    'bootstrap.servers': 'localhost:9092',
+    'bootstrap.servers': os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092'),
     'group.id': 'mysql-consumer-group',
     'auto.offset.reset': 'earliest'
 }
 consumer = Consumer(kafka_config)
 consumer.subscribe(['mysql-data-topic'])
 
+# Cassandra configuration with environment variables
+cassandra_host = [os.getenv('CASSANDRA_HOST', '127.0.0.1')]
+cassandra_keyspace = os.getenv('CASSANDRA_KEYSPACE', 'test_keyspace')
+cassandra_user = os.getenv('CASSANDRA_USER', 'cassandra')
+cassandra_password = os.getenv('CASSANDRA_PASSWORD', 'cassandra')
 
-cassandra_host = ['127.0.0.1']
-cassandra_keyspace = 'test_keyspace'
-auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
+auth_provider = PlainTextAuthProvider(username=cassandra_user, password=cassandra_password)
 cluster = Cluster(cassandra_host, auth_provider=auth_provider)
 session = cluster.connect()
 session.set_keyspace(cassandra_keyspace)
 
 def convert_value(value, cassandra_type):
-    
     if value is None:
         return None  
     if cassandra_type == "decimal":
@@ -49,12 +53,10 @@ try:
         if msg.error():
             print(f"Consumer error: {msg.error()}")
             continue
-
         
         try:
             message = json.loads(msg.value().decode('utf-8'))
             print(f"Received Message: {message}")
-
             
             values = []
             for column_name, column_type in columns.items():

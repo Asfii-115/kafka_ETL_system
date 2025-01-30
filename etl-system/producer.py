@@ -1,15 +1,25 @@
+# producer.py
 from sqlalchemy import create_engine
 from confluent_kafka import Producer
 import pandas as pd
 import json
+import os
 
-
-kafka_config = {'bootstrap.servers': 'localhost:9092'}
+# Kafka configuration with environment variables
+kafka_config = {
+    'bootstrap.servers': os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092')
+}
 producer = Producer(kafka_config)
 topic = 'mysql-data-topic'
 
+# MySQL connection with environment variables
+mysql_user = os.getenv('MYSQL_USER', 'app_user')
+mysql_password = os.getenv('MYSQL_PASSWORD', 'Test_Pass@123')
+mysql_host = os.getenv('MYSQL_HOST', 'localhost')
+mysql_port = os.getenv('MYSQL_PORT', '3306')
+mysql_database = os.getenv('MYSQL_DATABASE', 'my_db')
 
-db_url = "mysql+pymysql://app_user:Test_Pass%40123@localhost:3306/my_db"  
+db_url = f"mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}:{mysql_port}/{mysql_database}"
 engine = create_engine(db_url)
 
 def delivery_report(err, msg):
