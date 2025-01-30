@@ -137,4 +137,6 @@ The system includes error handling for:
 ├── main_consumer.py             # Consumes Kafka messages and inserts into Cassandra
 ├── schema.json                  # Defines column mapping and primary keys
 ├── requirements.txt             # List of dependencies
+├── Dockerfile                   # Docker configuration for the application
+├── docker-compose.yml           # Docker Compose configuration for multi-container setup
 └── README.md                    # Documentation
